@@ -1,0 +1,16 @@
+#Virtual Environment
+chatbot_env/
+
+#Python generated files
+__pycache__/
+*pyc
+*.pyo
+*.pyd
+
+#Model Files (Optional, remove if you want to save the models)
+chatbot_model.pkl
+vectorizer.pkl
+label_encoder.pkl
+
+#Notes file
+notes.txt

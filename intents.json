@@ -1,0 +1,101 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hello",
+        "Hey there",
+        "Good morning",
+        "How are you",
+        "What's up",
+        "Yo"
+      ],
+      "responses": [
+        "Hello! How can I assist you today?",
+        "Hi there, what do you need?",
+        "Greetings! Ask me anything.",
+        "Hey! Ready to help."
+      ]
+    },
+    {
+      "tag": "farewell",
+      "patterns": [
+        "Bye",
+        "Goodbye",
+        "See you later",
+        "I'm done",
+        "Catch you later",
+        "That's all for now"
+      ],
+      "responses": [
+        "Goodbye! Have a great day.",
+        "See you soon!",
+        "Take care!",
+        "Talk to you later."
+      ]
+    },
+    {
+      "tag": "check_time",
+      "patterns": [
+        "What time is it",
+        "Current time",
+        "Time now",
+        "Do you know the time",
+        "What's the clock say",
+        "Tell me the time"
+      ],
+      "responses": [
+        "I'll check the time for you now.",
+        "The current time is:"
+      ]
+    },
+    {
+      "tag": "set_reminder",
+      "patterns": [
+        "Remind me to call Mom at 5pm",
+        "Set a reminder for the meeting tomorrow",
+        "I need a reminder at 10:30am",
+        "Can you remind me about groceries",
+        "Set a note for me",
+        "schedule a reminder for 7 tonight"
+      ],
+      "responses": [
+        "Reminder set! What should I remind you about?",
+        "Got it. I'll make a note of that.",
+        "Reminder scheduled for you."
+      ]
+    },
+    {
+      "tag": "check_weather",
+      "patterns": [
+        "What's the weather like",
+        "Is it raining",
+        "Weather forecast today",
+        "Do I need an umbrella",
+        "Tell me the temperature",
+        "Weather in Toronto"
+      ],
+      "responses": [
+        "Checking the current weather now.",
+        "I can find the forecast for you."
+      ]
+    },
+    {
+      "tag": "thank_you",
+      "patterns": [
+        "Thank you",
+        "Thanks a lot",
+        "That was helpful",
+        "Cheers",
+        "I appreciate it"
+      ],
+      "responses": [
+        "You're very welcome!",
+        "Anytime!",
+        "Glad I could help.",
+        "No problem at all."
+      ]
+    }
+  ]
+}
