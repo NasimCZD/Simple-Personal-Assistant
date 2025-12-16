@@ -18,6 +18,10 @@ import os
 lemmatizer = WordNetLemmatizer()
 ignore_words = ['?', '!', '.', ',']
 
+# Ensure this is loaded globally so get_response can see it
+with open('intents.json', 'r') as f:
+    intents = json.load(f)
+
 # 1. Load the Intents Data
 try:
     with open('intents.json') as file:
@@ -94,56 +98,87 @@ def predict_class(sentence):
         # If confidence is low
         return []
 
-def get_response(intents_list, intents_json, user_input):
-    """Get a random response and execute dynamic actions."""
-    if not intents_list:
-        return "I'm sorry, I don't quite understand that. Can you rephrase?"
-        
-    tag = intents_list[0]['intent']
-    list_of_intents = intents_json['intents']
+# Change this: def get_response(user_input, intents_json):
+# To this:
+def get_response(user_message): 
+    """Predicts intent and executes dynamic actions."""
+    
+    # 1. Vectorize the input message
+    input_vector = vectorizer.transform([user_message])
+    
+    # 2. Predict the tag using your Logistic Regression model
+    probabilities = model.predict_proba(input_vector)[0]
+    max_index = np.argmax(probabilities)
+    tag = classes[max_index]
+    confidence = probabilities[max_index]
+
+    # 3. Handle low confidence
+    if confidence < 0.3:
+        return "I'm sorry, I don't quite understand that. Could you try phrasing it differently?"
+
+    # 4. Match the predicted tag with our intents JSON data
+    # (Using the global variable 'intents' loaded at the top of your script)
+    list_of_intents = intents['intents']
     
     for i in list_of_intents:
         if i['tag'] == tag:
-            # Handle special intents with dynamic actions
+            
+            # --- ACTION: Check Time ---
             if tag == 'check_time':
+                import datetime
                 current_time = datetime.datetime.now().strftime("%I:%M %p, %B %d, %Y")
                 return random.choice(i['responses']) + f" **{current_time}**."
             
+            # --- ACTION: Set Reminder ---
             elif tag == 'set_reminder':
-                # Simple Entity Extraction using RegEx
-                match = re.search(r'(\d{1,2}:\d{2}(?:am|pm)?|\d{1,2}(?:am|pm)|tomorrow|tonight)', user_input.lower())
+                import re
+                # Look for a time/entity
+                match = re.search(r'(\d{1,2}:\d{2}(?:am|pm)?|\d{1,2}(?:am|pm)|tomorrow|tonight)', user_message.lower())
                 
                 if match:
                     time_entity = match.group(0)
-                    # Extract task by removing common reminder phrases
-                    task_entity = re.sub(r'(remind me to|set a reminder for|i need a reminder about|schedule a reminder for)', '', user_input.lower()).strip()
-                    task_entity = task_entity.replace(time_entity, '').strip()
-                    
+                    # Clean the task by removing the trigger phrases
+                    task_entity = re.sub(r'(remind me to|set a reminder for|i need a reminder about|schedule a reminder for)', '', user_message.lower()).strip()
+                    # task_entity = task_entity.replace(time_entity, '').strip()
+                    # Changed the above line to below.This removes the time and the word 'at' if it's left at the end.
+                    task_entity = re.sub(r'\s+at\s*$', '', task_entity.replace(time_entity, '').strip()) 
                     if task_entity:
                         return random.choice(i['responses']) + f" I've set a reminder for **{task_entity.title()}** at **{time_entity}**."
                     else:
-                        return "I know the time, but what should I remind you about?"
+                        return "I've got the time, but what exactly should I remind you about?"
                 else:
-                    return "I can set a reminder, but what time and for what task? Please specify both."
-            
-            # For all other intents, return a simple random response
-            result = random.choice(i['responses'])
-            return result
+                    return "I can set a reminder, but I need a time (like 5pm) and a task. Could you specify both?"
+
+            # --- ACTION: Check Weather ---
+            elif tag == 'check_weather':
+                # Assuming you have the get_weather function defined above
+                return get_weather("Amsterdam")
+
+            # --- DEFAULT RESPONSE ---
+            else:
+                return random.choice(i['responses'])
+
+    return "I'm not sure how to help with that yet."
             
 # --- PHASE 4: The Chat Loop ---
 
 print("\n--- Simple Personal Assistant Chatbot is Ready! (Type 'bye' to exit) ---")
 
-while True:
-    user_input = input("You: ")
-    if user_input.lower() == 'bye':
-        break
+# for the purpose of API
+if __name__ == "__main__":
+    print("--- Simple Personal Assistant Chatbot is Ready! (Type 'quit' to exit) ---")
+    while True:
+        message = input("You: ")
+        if message.lower() == 'quit':
+            break
+        print(f"Assistant: {get_response(message)}")
         
     # 1. Predict the Intent
     intents = predict_class(user_input)
     # 2. Get the Response
     response = get_response(intents, data, user_input)
     
+
     print(f"Assistant: {response}")
 
 print("Chatbot terminated.")
