@@ -18,6 +18,12 @@ import os
 lemmatizer = WordNetLemmatizer()
 ignore_words = ['?', '!', '.', ',']
 
+# Simple in-memory storage for user data
+user_data = {
+    "name": None,
+    "last_intent": None
+}
+
 # Ensure this is loaded globally so get_response can see it
 with open('intents.json', 'r') as f:
     intents = json.load(f)
@@ -122,7 +128,7 @@ def get_response(user_message):
     
     for i in list_of_intents:
         if i['tag'] == tag:
-            
+           
             # --- ACTION: Check Time ---
             if tag == 'check_time':
                 import datetime
@@ -153,6 +159,24 @@ def get_response(user_message):
             elif tag == 'check_weather':
                 # Assuming you have the get_weather function defined above
                 return get_weather("Amsterdam")
+
+           # --- Add and Store Name ---
+            elif tag == 'store_name':
+                import re
+                # Extract name using Regex
+                match = re.search(r"my name is (.*)", user_message.lower())
+                if match:
+                    name = match.group(1).title()
+                    user_data["name"] = name
+                    return f"Nice to meet you, {name}! I'll remember that."
+                else:
+                    return "I didn't catch your name. Could you say 'My name is [name]'?"
+
+            elif tag == 'greeting':
+                if user_data["name"]:
+                    return f"Hello again, {user_data['name']}! How can I help you today?"
+                else:
+                    return random.choice(i['responses'])
 
             # --- DEFAULT RESPONSE ---
             else:

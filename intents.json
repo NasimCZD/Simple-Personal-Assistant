@@ -19,6 +19,22 @@
       ]
     },
     {
+     "tag": "store_name",
+     "patterns": [
+       "My name is ",
+       "I am called ",
+       "Call me ",
+       "You can call me ",
+       "I'm "
+     ],
+     "responses": [
+       "Got it!",
+       "Nice to meet you!",
+       "Understood, I will remember that."
+      ]
+     },
+
+    {
       "tag": "farewell",
       "patterns": [
         "Bye",
